@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Board – Ladies of Lee</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a href="index.html" class="back-link">← Back to Events</a>
+  <h1 id="event-title">Event Board</h1>
+   <!-- Drag & Drop Helper -->
+ <p id="drag-hint">💡 Tip: Drag & Drop tasks between columns or tap them to move.</p>
+
+
+  <div id="board">
+    <div class="column" data-column="todo">
+      <h2>To Do</h2>
+      <div class="cards"></div>
+      <input placeholder="New task..." />
+      <button>Add</button>
+    </div>
+
+    <div class="column" data-column="doing">
+      <h2>In Progress</h2>
+      <div class="cards"></div>
+    </div>
+
+    <div class="column" data-column="done">
+      <h2>Done</h2>
+      <div class="cards"></div>
+    </div>
+  </div>
+
+  <script type="module" src="./event.js"></script>
+</body>
+</html>

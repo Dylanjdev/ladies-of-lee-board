@@ -1,0 +1,237 @@
+/* ===========================
+   Global Styles
+=========================== */
+body {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  background: linear-gradient(to bottom right, #f9f9fb, #f3f3f8);
+  color: #222;
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+}
+
+h1 {
+  color: #6c4ed2;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* ===========================
+   Forms & Buttons
+=========================== */
+input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 0.75rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  background: #6c4ed2;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+button:hover {
+  background: #5a3ec0;
+  transform: translateY(-1px);
+}
+
+/* ===========================
+   Event List Page
+=========================== */
+.event-list ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+  padding: 0;
+}
+
+.event-card {
+  position: relative;
+  list-style: none;
+  width: 260px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  border-top: 4px solid #6c4ed2;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
+
+.event-card a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1.25rem;
+  height: 100%;
+}
+
+.event-card h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #222;
+}
+
+.event-card p {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  color: #3db4c0;
+  font-style: italic;
+}
+
+.delete-event {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-event:hover {
+  background: #e74c3c;
+}
+
+/* ===========================
+   Event Page (Board)
+=========================== */
+#board {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.column {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  width: 300px;
+  min-height: 400px;
+  transition: transform 0.2s ease;
+  border-top: 4px solid #6c4ed2;
+}
+
+.column:hover {
+  transform: scale(1.02);
+}
+
+.cards {
+  min-height: 250px;
+  padding: 0.5rem;
+}
+
+.card {
+  background: #f1f1f9;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin: 0.5rem 0;
+  cursor: grab;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.card:hover {
+  background: #e8e3ff;
+}
+
+.card.dragging {
+  opacity: 0.5;
+}
+
+button.delete {
+  background: transparent;
+  border: none;
+  color: #b00;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button.delete:hover {
+  color: #f00;
+}
+
+.card small {
+  display: block;
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 3px;
+}
+
+.card small.assigned {
+  color: #6c4ed2;
+}
+
+.card small.completed {
+  color: #2ecc71;
+}
+
+.column input {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.column > button {
+  width: 100%;
+  margin-top: 0.5rem;
+  background: #6c4ed2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-weight: bold;
+}
+
+.column > button:hover {
+  background: #5a3ec0;
+}
+
+/* ===========================
+   Back Link
+=========================== */
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #6c4ed2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+#drag-hint {
+  color: #6c4ed2;
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
