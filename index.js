@@ -1,13 +1,18 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
-const isEmbedded = window !== window.parent;
-if (isEmbedded) {
+// ---- Detect embed mode (Google Sites iframe) ----
+try {
+  if (window.self !== window.top) {
+    document.documentElement.classList.add("embedded");
+    document.body.classList.add("embedded");
+  }
+} catch {
+  document.documentElement.classList.add("embedded");
   document.body.classList.add("embedded");
 }
 
-
-// Firebase setup
+// ---- Firebase Config ----
 const firebaseConfig = {
   apiKey: "AIzaSyCOUhPJYZbvsymexJfEkEtYk5nzlW2Ni2Y",
   authDomain: "ladies-of-lee-board.firebaseapp.com",
@@ -18,35 +23,67 @@ const firebaseConfig = {
   appId: "1:957402410365:web:79c4e86775faa327827014"
 };
 
+// ---- Initialize Firebase ----
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// ---- Reusable In-Frame Safe Popup ----
+function showPopup(message, placeholder = "", title = "Input") {
+  return new Promise((resolve) => {
+    const popup = document.getElementById("popup");
+    const msg = document.getElementById("popup-message");
+    const input = document.getElementById("popup-input");
+    const ok = document.getElementById("popup-ok");
+    const cancel = document.getElementById("popup-cancel");
+    const heading = document.getElementById("popup-title");
+
+    heading.textContent = title;
+    msg.textContent = message;
+    input.value = "";
+    input.placeholder = placeholder;
+    popup.classList.remove("hidden");
+
+    const close = (val) => {
+      popup.classList.add("hidden");
+      ok.onclick = cancel.onclick = null;
+      resolve(val);
+    };
+
+    ok.onclick = () => close(input.value.trim());
+    cancel.onclick = () => close(null);
+  });
+}
+
+// ---- Main App Logic ----
 window.addEventListener("DOMContentLoaded", () => {
   const nameInput = document.getElementById("event-name");
   const addBtn = document.getElementById("add-event");
   const eventsUl = document.getElementById("events");
 
-  // ✅ Add new event
-  addBtn.onclick = () => {
-    const name = nameInput.value.trim();
+  // Add new event
+  addBtn.onclick = async () => {
+    let name = nameInput.value.trim();
+
+    // If empty, show popup for event name
+    if (!name) {
+      name = await showPopup("Enter the event name:", "Event name", "New Event");
+    }
     if (!name) return;
 
     const eventsRef = ref(db, "events");
     const newRef = push(eventsRef);
     const createdAt = Date.now();
 
-    set(newRef, { name, createdAt })
-      .then(() => {
-        nameInput.value = "";
-      })
-      .catch((err) => console.error("Error adding event:", err));
+    await set(newRef, { name, createdAt });
+    nameInput.value = "";
   };
 
-  // 🟣 Listen for events list
+  // Listen for event list changes
   const eventsRef = ref(db, "events");
   onValue(eventsRef, (snapshot) => {
     eventsUl.innerHTML = "";
     const data = snapshot.val();
+
     if (!data) {
       eventsUl.innerHTML = "<li>No events yet. Add one above!</li>";
       return;
@@ -56,27 +93,29 @@ window.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li");
       li.className = "event-card";
 
-      // 🟪 Clickable link for the event
+      // Link to event page
       const link = document.createElement("a");
       link.href = `event.html?eventId=${encodeURIComponent(id)}`;
       link.innerHTML = `
-        <div class="event-content">
-          <h3>${event.name}</h3>
-          <p>Click to open board →</p>
-        </div>
+        <h3>${event.name}</h3>
+        <p>${new Date(event.createdAt).toLocaleDateString()}</p>
       `;
 
-      // ❌ Delete button
+      // Delete button
       const del = document.createElement("button");
-      del.textContent = "✖";
+      del.textContent = "×";
       del.className = "delete-event";
-      del.onclick = (e) => {
+      del.onclick = async (e) => {
         e.stopPropagation();
-        e.preventDefault();
-        if (confirm(`Delete event "${event.name}" and all its tasks?`)) {
-          remove(ref(db, `events/${id}`));
-          remove(ref(db, `todos/${id}`));
-        }
+        const confirmDelete = await showPopup(
+          `Type "delete" to remove "${event.name}"`,
+          "delete",
+          "Delete Event"
+        );
+        if (confirmDelete?.toLowerCase() !== "delete") return;
+
+        remove(ref(db, `events/${id}`));
+        remove(ref(db, `todos/${id}`));
       };
 
       li.appendChild(link);
