@@ -1,6 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
+const isEmbedded = window !== window.parent;
+if (isEmbedded) {
+  document.body.classList.add("embedded");
+}
+
+
 // Firebase setup
 const firebaseConfig = {
   apiKey: "AIzaSyCOUhPJYZbvsymexJfEkEtYk5nzlW2Ni2Y",

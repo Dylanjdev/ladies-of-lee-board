@@ -1,6 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, remove, get, child } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
+const isEmbedded = window !== window.parent;
+if (isEmbedded) {
+  document.body.classList.add("embedded");
+}
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyCOUhPJYZbvsymexJfEkEtYk5nzlW2Ni2Y",
   authDomain: "ladies-of-lee-board.firebaseapp.com",
@@ -10,6 +16,8 @@ const firebaseConfig = {
   messagingSenderId: "957402410365",
   appId: "1:957402410365:web:79c4e86775faa327827014"
 };
+
+
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
