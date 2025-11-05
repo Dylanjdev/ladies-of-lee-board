@@ -235,3 +235,11 @@ button.delete:hover {
   font-style: italic;
   margin-bottom: 0.5rem;
 }
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+iframe, #board {
+  max-width: 100%;
+}
