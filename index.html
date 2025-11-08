@@ -9,11 +9,20 @@
 <body>
   <h1>Ladies of Lee 💜 – Events</h1>
 
-  <section class="event-form">
-    <h2>Create a New Event</h2>
-    <input id="event-name" placeholder="Event name (e.g. Ladies Brunch, Outreach Night)" />
-    <button id="add-event">Add Event</button>
-  </section>
+<section class="event-form">
+  <h2>Create a New Event</h2>
+
+  <input id="event-name" placeholder="Event name (e.g. Ladies Brunch, Outreach Night)" />
+
+  <div class="event-form-row">
+    <input id="event-date" type="date" />
+    <input id="event-time" type="time" />
+  </div>
+
+  <textarea id="event-notes" rows="3" placeholder="Notes (optional: location, details, etc.)"></textarea>
+
+  <button id="add-event">Add Event</button>
+</section>
 
   <section class="event-list">
     <h2>Events</h2>

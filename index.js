@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
 
-// ---- Detect embed mode (Google Sites iframe) ----
+// ---- Detect embed mode ----
 try {
   if (window.self !== window.top) {
     document.documentElement.classList.add("embedded");
@@ -27,7 +27,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// ---- Reusable In-Frame Safe Popup ----
+// ---- Reusable Popup ----
 function showPopup(message, placeholder = "", title = "Input") {
   return new Promise((resolve) => {
     const popup = document.getElementById("popup");
@@ -57,29 +57,45 @@ function showPopup(message, placeholder = "", title = "Input") {
 // ---- Main App Logic ----
 window.addEventListener("DOMContentLoaded", () => {
   const nameInput = document.getElementById("event-name");
+  const dateInput = document.getElementById("event-date");
+  const timeInput = document.getElementById("event-time");
+  const notesInput = document.getElementById("event-notes");
   const addBtn = document.getElementById("add-event");
   const eventsUl = document.getElementById("events");
+
+  const eventsRef = ref(db, "events");
 
   // Add new event
   addBtn.onclick = async () => {
     let name = nameInput.value.trim();
+    let date = dateInput.value;
+    let time = timeInput.value;
+    let notes = notesInput.value.trim();
 
-    // If empty, show popup for event name
     if (!name) {
       name = await showPopup("Enter the event name:", "Event name", "New Event");
     }
     if (!name) return;
 
-    const eventsRef = ref(db, "events");
-    const newRef = push(eventsRef);
     const createdAt = Date.now();
+    const newRef = push(eventsRef);
 
-    await set(newRef, { name, createdAt });
+    await set(newRef, {
+      name,
+      date: date || null,
+      time: time || null,
+      notes: notes || null,
+      createdAt
+    });
+
+    // Clear inputs
     nameInput.value = "";
+    dateInput.value = "";
+    timeInput.value = "";
+    notesInput.value = "";
   };
 
-  // Listen for event list changes
-  const eventsRef = ref(db, "events");
+  // Render events
   onValue(eventsRef, (snapshot) => {
     eventsUl.innerHTML = "";
     const data = snapshot.val();
@@ -93,15 +109,19 @@ window.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li");
       li.className = "event-card";
 
-      // Link to event page
       const link = document.createElement("a");
       link.href = `event.html?eventId=${encodeURIComponent(id)}`;
+
+      const dateTime = [event.date, event.time].filter(Boolean).join(" • ");
+      const notes = event.notes ? `<p class="event-notes">${event.notes}</p>` : "";
+
       link.innerHTML = `
         <h3>${event.name}</h3>
-        <p>${new Date(event.createdAt).toLocaleDateString()}</p>
+        ${dateTime ? `<p class="event-meta">${dateTime}</p>` : ""}
+        ${notes}
+        <p class="event-created">Added ${new Date(event.createdAt).toLocaleDateString()}</p>
       `;
 
-      // Delete button
       const del = document.createElement("button");
       del.textContent = "×";
       del.className = "delete-event";
@@ -113,7 +133,6 @@ window.addEventListener("DOMContentLoaded", () => {
           "Delete Event"
         );
         if (confirmDelete?.toLowerCase() !== "delete") return;
-
         remove(ref(db, `events/${id}`));
         remove(ref(db, `todos/${id}`));
       };

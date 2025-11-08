@@ -412,3 +412,26 @@ ul {
     width: 100%;
   }
 }
+.event-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+#event-notes {
+  width: 100%;
+  resize: vertical;
+  margin-bottom: 0.5rem;
+}
+
+.event-meta {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.event-notes {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+  color: #333;
+}
