@@ -41,6 +41,27 @@
   </div>
 </div>
 
+<!-- Edit Event Modal -->
+<div id="edit-modal" class="popup hidden">
+  <div class="popup-content edit-modal-content">
+    <h3>Edit Event</h3>
+    
+    <input id="edit-event-name" placeholder="Event name" />
+    
+    <div class="event-form-row">
+      <input id="edit-event-date" type="date" />
+      <input id="edit-event-time" type="time" />
+    </div>
+    
+    <textarea id="edit-event-notes" rows="3" placeholder="Notes (optional: location, details, etc.)"></textarea>
+    
+    <div class="popup-buttons">
+      <button id="save-edit">Save Changes</button>
+      <button id="cancel-edit">Cancel</button>
+    </div>
+  </div>
+</div>
+
   <script type="module" src="./index.js"></script>
 </body>
 </html>

@@ -54,6 +54,56 @@ function showPopup(message, placeholder = "", title = "Input") {
   });
 }
 
+// ---- Edit Modal ----
+function showEditModal(event, eventId) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById("edit-modal");
+    const nameInput = document.getElementById("edit-event-name");
+    const dateInput = document.getElementById("edit-event-date");
+    const timeInput = document.getElementById("edit-event-time");
+    const notesInput = document.getElementById("edit-event-notes");
+    const saveBtn = document.getElementById("save-edit");
+    const cancelBtn = document.getElementById("cancel-edit");
+
+    // Pre-fill form with current values
+    nameInput.value = event.name || "";
+    dateInput.value = event.date || "";
+    timeInput.value = event.time || "";
+    notesInput.value = event.notes || "";
+
+    modal.classList.remove("hidden");
+    nameInput.focus();
+
+    const close = (result) => {
+      modal.classList.add("hidden");
+      saveBtn.onclick = cancelBtn.onclick = null;
+      resolve(result);
+    };
+
+    saveBtn.onclick = () => {
+      const updatedEvent = {
+        name: nameInput.value.trim(),
+        date: dateInput.value || null,
+        time: timeInput.value || null,
+        notes: notesInput.value.trim() || null,
+        createdAt: event.createdAt // Keep original creation time
+      };
+      close(updatedEvent);
+    };
+
+    cancelBtn.onclick = () => close(null);
+
+    // Close on escape key
+    const handleEscape = (e) => {
+      if (e.key === "Escape") {
+        close(null);
+        document.removeEventListener("keydown", handleEscape);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+  });
+}
+
 // ---- Main App Logic ----
 window.addEventListener("DOMContentLoaded", () => {
   const nameInput = document.getElementById("event-name");
@@ -122,11 +172,41 @@ window.addEventListener("DOMContentLoaded", () => {
         <p class="event-created">Added ${new Date(event.createdAt).toLocaleDateString()}</p>
       `;
 
-      const del = document.createElement("button");
-      del.textContent = "×";
-      del.className = "delete-event";
-      del.onclick = async (e) => {
+      // Create action buttons container
+      const actionsDiv = document.createElement("div");
+      actionsDiv.className = "event-actions";
+
+      // Menu button (3 dots)
+      const menuBtn = document.createElement("button");
+      menuBtn.innerHTML = "⋯";
+      menuBtn.className = "menu-button";
+      
+      // Dropdown menu
+      const dropdown = document.createElement("div");
+      dropdown.className = "menu-dropdown";
+      
+      // Edit menu item
+      const editItem = document.createElement("button");
+      editItem.className = "menu-item";
+      editItem.innerHTML = '<span class="icon">✏</span>Edit';
+      editItem.onclick = async (e) => {
         e.stopPropagation();
+        e.preventDefault();
+        dropdown.classList.remove("show");
+        const updatedEvent = await showEditModal(event, id);
+        if (updatedEvent && updatedEvent.name) {
+          await set(ref(db, `events/${id}`), updatedEvent);
+        }
+      };
+      
+      // Delete menu item
+      const deleteItem = document.createElement("button");
+      deleteItem.className = "menu-item delete";
+      deleteItem.innerHTML = '<span class="icon">×</span>Delete';
+      deleteItem.onclick = async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        dropdown.classList.remove("show");
         const confirmDelete = await showPopup(
           `Type "delete" to remove "${event.name}"`,
           "delete",
@@ -137,9 +217,37 @@ window.addEventListener("DOMContentLoaded", () => {
         remove(ref(db, `todos/${id}`));
       };
 
+      dropdown.appendChild(editItem);
+      dropdown.appendChild(deleteItem);
+      
+      // Toggle dropdown on menu button click
+      menuBtn.onclick = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        
+        // Close all other dropdowns first
+        document.querySelectorAll('.menu-dropdown.show').forEach(d => {
+          if (d !== dropdown) d.classList.remove('show');
+        });
+        
+        dropdown.classList.toggle("show");
+      };
+
+      actionsDiv.appendChild(menuBtn);
+      actionsDiv.appendChild(dropdown);
+
       li.appendChild(link);
-      li.appendChild(del);
+      li.appendChild(actionsDiv);
       eventsUl.appendChild(li);
     });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.event-actions')) {
+      document.querySelectorAll('.menu-dropdown.show').forEach(dropdown => {
+        dropdown.classList.remove('show');
+      });
+    }
   });
 });
